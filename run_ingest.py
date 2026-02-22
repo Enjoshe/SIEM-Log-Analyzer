@@ -1,57 +1,88 @@
-import argparse
+import re
 import json
-from core.db import DB
-from core import parser
-from datetime import datetime
+from datetime import datetime, timezone
 from elasticsearch import Elasticsearch
 
-def ingest(cfg):
-    # Setup SQLite
-    db = DB(cfg.get("database_url"))
+# Load config
+with open("config.json", "r") as f:
+    cfg = json.load(f)
 
-    # Setup Elasticsearch
-    es_host = cfg.get("elasticsearch", {}).get("host", "http://localhost:9200")
-    index_name = cfg.get("elasticsearch", {}).get("index", "logs-siem")
-    es = Elasticsearch([es_host])
+es_host = cfg.get("elasticsearch", {}).get("host", "http://localhost:9200")
+index_name = cfg.get("elasticsearch", {}).get("index", "logs-siem")
 
-    for src in cfg.get("log_sources", []):
-        path = src["path"]
-        print(f"Ingesting file: {path}")
+es = Elasticsearch(es_host)
 
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                # Parse log line based on type
-                if src["type"] == "apache_access":
-                    data = parser.parse_apache_line(line)
-                elif src["type"] == "syslog":
-                    data = parser.parse_syslog_line(line)
-                else:
-                    continue  # skip unknown types
+# ---------------------------
+# Helper: Send to Elasticsearch
+# ---------------------------
+def send_to_es(document):
+    es.index(index=index_name, document=document)
 
-                if data:
-                    # Save to SQLite
-                    db.add_log(source=src["name"], **data)
+# ---------------------------
+# Parse Apache Logs
+# ---------------------------
+def parse_apache(line):
+    pattern = r'(\d+\.\d+\.\d+\.\d+).*\[(.*?)\] "(.*?)" (\d{3}) (\d+)'
+    match = re.match(pattern, line)
+    if not match:
+        return None
 
-                    # Save to Elasticsearch
-                    es_doc = {
-                        "@timestamp": datetime.utcnow().isoformat(),
-                        "source_file": path,
-                        **data
-                    }
-                    es.index(index=index_name, document=es_doc)
+    ip, raw_time, request, status, bytes_sent = match.groups()
 
-                    # >>> Print each log sent
-                    print(f"Sent to Elasticsearch: {es_doc}")
+    timestamp = datetime.now(timezone.utc)
 
+    return {
+        "@timestamp": timestamp.isoformat(),
+        "ip": ip,
+        "request": request,
+        "status_code": int(status),
+        "bytes_sent": int(bytes_sent),
+        "event": "web_request",
+        "source": "apache"
+    }
+
+# ---------------------------
+# Parse Syslog (Linux)
+# ---------------------------
+def parse_syslog(line):
+    ip_match = re.search(r'(\d+\.\d+\.\d+\.\d+)', line)
+    ip = ip_match.group(1) if ip_match else None
+
+    event_type = "normal_activity"
+
+    if "Failed password" in line:
+        event_type = "failed_login"
+    elif "session opened for user root" in line:
+        event_type = "privilege_escalation"
+
+    timestamp = datetime.now(timezone.utc)
+
+    return {
+        "@timestamp": timestamp.isoformat(),
+        "ip": ip,
+        "message": line.strip(),
+        "event": event_type,
+        "source": "linux"
+    }
+
+# ---------------------------
+# Ingest Files
+# ---------------------------
+def ingest_file(file_path, parser):
+    with open(file_path, "r") as f:
+        for line in f:
+            doc = parser(line)
+            if doc:
+                send_to_es(doc)
+
+# ---------------------------
+# MAIN
+# ---------------------------
 if __name__ == "__main__":
-    # Parse command-line args
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--config", required=True, help="Path to config.json")
-    args = ap.parse_args()
+    print("🚀 Ingesting Apache logs...")
+    ingest_file("logs/apache_sample.log", parse_apache)
 
-    # Load config
-    with open(args.config, "r", encoding="utf-8") as fh:
-        cfg = json.load(fh)
+    print("🚀 Ingesting Syslog logs...")
+    ingest_file("logs/syslog_sample.log", parse_syslog)
 
-    # Run ingestion
-    ingest(cfg)
+    print("✅ Ingestion complete.")
