@@ -1,88 +1,89 @@
+import os
 import re
-import json
-from datetime import datetime, timezone
+from datetime import datetime
 from elasticsearch import Elasticsearch
 
-# Load config
-with open("config.json", "r") as f:
-    cfg = json.load(f)
+# -----------------------------
+# Connect to Elasticsearch
+# -----------------------------
+es = Elasticsearch("http://localhost:9200")
 
-es_host = cfg.get("elasticsearch", {}).get("host", "http://localhost:9200")
-index_name = cfg.get("elasticsearch", {}).get("index", "logs-siem")
+INDEX_NAME = "logs-siem"
 
-es = Elasticsearch(es_host)
 
-# ---------------------------
-# Helper: Send to Elasticsearch
-# ---------------------------
-def send_to_es(document):
-    es.index(index=index_name, document=document)
+# -----------------------------
+# Create index if not exists
+# -----------------------------
+def create_index():
+    if not es.indices.exists(index=INDEX_NAME):
+        print("🛠 Creating index...")
+        es.indices.create(
+            index=INDEX_NAME,
+            body={
+                "mappings": {
+                    "properties": {
+                        "ip": {"type": "ip"},
+                        "timestamp": {"type": "date"},
+                        "method": {"type": "keyword"},
+                        "url": {"type": "text"},
+                        "status": {"type": "integer"},
+                        "size": {"type": "integer"},
+                    }
+                }
+            },
+        )
+        print(" Index created")
+    else:
+        print(" Index already exists")
 
-# ---------------------------
-# Parse Apache Logs
-# ---------------------------
+
+# -----------------------------
+# Apache log parser
+# -----------------------------
 def parse_apache(line):
-    pattern = r'(\d+\.\d+\.\d+\.\d+).*\[(.*?)\] "(.*?)" (\d{3}) (\d+)'
+    pattern = r'(\d+\.\d+\.\d+\.\d+) - - \[(.*?)\] "(.*?) (.*?) HTTP.*" (\d+) (\d+)'
     match = re.match(pattern, line)
+
     if not match:
         return None
 
-    ip, raw_time, request, status, bytes_sent = match.groups()
+    ip, timestamp, method, url, status, size = match.groups()
 
-    timestamp = datetime.now(timezone.utc)
-
-    return {
-        "@timestamp": timestamp.isoformat(),
-        "ip": ip,
-        "request": request,
-        "status_code": int(status),
-        "bytes_sent": int(bytes_sent),
-        "event": "web_request",
-        "source": "apache"
-    }
-
-# ---------------------------
-# Parse Syslog (Linux)
-# ---------------------------
-def parse_syslog(line):
-    ip_match = re.search(r'(\d+\.\d+\.\d+\.\d+)', line)
-    ip = ip_match.group(1) if ip_match else None
-
-    event_type = "normal_activity"
-
-    if "Failed password" in line:
-        event_type = "failed_login"
-    elif "session opened for user root" in line:
-        event_type = "privilege_escalation"
-
-    timestamp = datetime.now(timezone.utc)
+    # Convert Apache timestamp to ISO format
+    dt = datetime.strptime(timestamp.split()[0], "%d/%b/%Y:%H:%M:%S")
 
     return {
-        "@timestamp": timestamp.isoformat(),
         "ip": ip,
-        "message": line.strip(),
-        "event": event_type,
-        "source": "linux"
+        "timestamp": dt.isoformat(),
+        "method": method,
+        "url": url,
+        "status": int(status),
+        "size": int(size),
     }
 
-# ---------------------------
-# Ingest Files
-# ---------------------------
-def ingest_file(file_path, parser):
+
+# -----------------------------
+# Ingest file
+# -----------------------------
+def ingest_file(file_path):
+    if not os.path.exists(file_path):
+        print(f" File not found: {file_path}")
+        return
+
+    print(f"🚀 Ingesting file: {file_path}")
+
     with open(file_path, "r") as f:
         for line in f:
-            doc = parser(line)
-            if doc:
-                send_to_es(doc)
+            parsed = parse_apache(line.strip())
+            if parsed:
+                es.index(index=INDEX_NAME, document=parsed)
 
-# ---------------------------
+    print(" Ingestion complete")
+
+
+# -----------------------------
 # MAIN
-# ---------------------------
+# -----------------------------
 if __name__ == "__main__":
-    print("🚀 Ingesting Apache logs...")
-    ingest_file("logs/apache_sample.log", parse_apache)
-
-    print("🚀 Ingesting Syslog logs...")
-    ingest_file("logs/syslog_sample.log", parse_syslog)
-
-    print("✅ Ingestion complete.")
+    create_index()
+    ingest_file("logs/apache_sample.log")
