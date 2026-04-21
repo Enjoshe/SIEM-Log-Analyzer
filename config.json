@@ -1,24 +1,15 @@
 {
   "database_url": "sqlite:///siem.db",
-  "log_sources": [
-    {
-      "name": "apache_logs",
-      "type": "apache_access",
-      "path": "logs/apache_access.log"
-    },
-    {
-      "name": "syslog",
-      "type": "syslog",
-      "path": "logs/syslog_sample.log"
-    }
-  ],
-  "ml": {
-    "enable": true,
-    "features": ["bytes_sent", "status_code", "hour"],
-    "model": "isolation_forest"
+  "elasticsearch": {
+    "host": "http://localhost:9200",
+    "index": "logs-siem"
   },
   "alerts": {
-    "blacklisted_ips": ["1.2.3.4", "5.6.7.8"],
-    "failed_login_threshold": 3
+    "failed_login_threshold": 10,
+    "window_seconds": 60
+  },
+  "ml": {
+    "enable": true,
+    "contamination": 0.05
   }
 }
