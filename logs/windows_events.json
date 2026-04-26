@@ -1,0 +1,17 @@
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:00Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:01Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:02Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:03Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:04Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:05Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:06Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:07Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:08Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:09Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:10Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4625, "TimeCreated": "2026-04-18T03:22:11Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4624, "TimeCreated": "2026-04-18T03:22:15Z", "Computer": "DESKTOP-TESLA-01", "TargetUserName": "admin", "IpAddress": "45.33.32.156"}
+{"EventID": 4720, "TimeCreated": "2026-04-18T03:23:00Z", "Computer": "DESKTOP-TESLA-01", "SubjectUserName": "admin", "TargetUserName": "svc-backup-user"}
+{"EventID": 4732, "TimeCreated": "2026-04-18T03:23:05Z", "Computer": "DESKTOP-TESLA-01", "SubjectUserName": "admin", "GroupName": "Administrators"}
+{"EventID": 4688, "TimeCreated": "2026-04-18T03:23:10Z", "Computer": "DESKTOP-TESLA-01", "SubjectUserName": "sarah.chen", "NewProcessName": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "ParentProcessName": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE", "CommandLine": "powershell -enc JABjAGwAaQBlAG4AdA=="}
+{"EventID": 1102, "TimeCreated": "2026-04-18T03:24:00Z", "Computer": "DESKTOP-TESLA-01", "SubjectUserName": "admin"}

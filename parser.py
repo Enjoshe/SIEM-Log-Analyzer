@@ -3,6 +3,12 @@ import re
 import json
 from datetime import datetime
 
+def parse_windows_timestamp(ts):
+    try:
+        return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        return None
+
 # ─────────────────────────────────────────────────────────
 # Windows Event ID mapping
 # Why: Event IDs are just numbers. Mapping them to human-readable
@@ -40,7 +46,7 @@ def normalize_windows_event(raw):
         "source":        "windows",
         "event_id":      event_id,
         "event_type":    WINDOWS_EVENT_TYPES.get(event_id, f"unknown_{event_id}"),
-        "timestamp":     raw.get("TimeCreated"),
+        "timestamp": parse_windows_timestamp(raw.get("TimeCreated")),
         "hostname":      raw.get("Computer"),
         "user":          raw.get("TargetUserName") or raw.get("SubjectUserName"),
         "source_ip":     raw.get("IpAddress"),

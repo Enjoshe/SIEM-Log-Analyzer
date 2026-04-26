@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from .models import Base, LogEntry, Alert
+from models import Base, LogEntry, Alert
 
 class DB:
     def __init__(self, db_url="sqlite:///siem.db"):

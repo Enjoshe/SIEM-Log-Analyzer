@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from core.db import DB
+from db import DB
 from core import parser
 from elasticsearch import Elasticsearch
 

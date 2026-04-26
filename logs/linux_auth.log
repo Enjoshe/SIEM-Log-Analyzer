@@ -1,0 +1,14 @@
+Apr 18 03:22:00 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54230 ssh2
+Apr 18 03:22:01 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54231 ssh2
+Apr 18 03:22:02 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54232 ssh2
+Apr 18 03:22:03 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54233 ssh2
+Apr 18 03:22:04 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54234 ssh2
+Apr 18 03:22:05 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54235 ssh2
+Apr 18 03:22:06 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54236 ssh2
+Apr 18 03:22:07 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54237 ssh2
+Apr 18 03:22:08 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54238 ssh2
+Apr 18 03:22:09 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54239 ssh2
+Apr 18 03:22:10 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54240 ssh2
+Apr 18 03:22:11 prod-server-01 sshd[1234]: Failed password for ubuntu from 45.33.32.156 port 54241 ssh2
+Apr 18 03:23:00 prod-server-01 sshd[1234]: Accepted publickey for root from 45.33.32.156 port 54245 ssh2
+Apr 18 03:23:05 prod-server-01 sudo: ubuntu : TTY=pts/0 ; PWD=/home/ubuntu ; USER=root ; COMMAND=/bin/bash
