@@ -2,11 +2,11 @@
 
 ## Overview
 A lightweight Security Information and Event Management (SIEM) style project:
-- Ingests system or application logs (CSV, syslog, Apache access logs).
+- Ingests system or application logs (Windows events, Linux Auth, Apache access logs).
 - Normalizes and stores logs in SQLite.
 - Applies rule-based detection (e.g., brute force, suspicious IPs).
 - Uses a simple ML anomaly detector (Isolation Forest) for unusual activity.
-- Visualizes results in a Streamlit dashboard.
+- Visualization through ELK Stack.
 
 This project is meant for learning and portfolio use — not for production SOCs.
 
